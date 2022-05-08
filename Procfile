@@ -1,1 +1,1 @@
-web: python kittybot.py
+worker: python kittybot.py
