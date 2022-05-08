@@ -1,1 +1,1 @@
-web: python kittybot.py
+web: python kittybot.py -p $PORT
