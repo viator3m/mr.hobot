@@ -1,1 +1,1 @@
-web: python kittybot.py -p $PORT
+worker: python kittybot.py -p $PORT
