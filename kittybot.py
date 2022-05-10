@@ -1,5 +1,6 @@
 import logging
 import os
+import random
 
 import requests
 
@@ -72,7 +73,7 @@ def new_cat(update: Update, context: CallbackContext, content: str) -> None:
 
 
 def wake_up(update: Update, context: CallbackContext) -> None:
-    """Приветствует пользователя. Сразу отправляет фото."""
+    """Приветствует пользователя. Сразу отправляет фото или гифку."""
     chat = update.effective_chat
     name = update.effective_chat.first_name
 
@@ -80,11 +81,8 @@ def wake_up(update: Update, context: CallbackContext) -> None:
         chat_id=chat.id,
         text=f'Привет, {name}! Посмотри какого котика я тебе нашел.',
     )
-    context.bot.send_photo(
-        chat.id,
-        get_new_image(CAT_URL_PHOTO),
-        reply_markup=BUTTONS
-    )
+    content = random.choice(('photo', 'gif'))
+    new_cat(update, context, content)
 
 
 def button(update: Update, context: CallbackContext) -> None:
