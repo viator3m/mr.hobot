@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-secret_token = os.getenv('TOKEN')
+TOKEN = os.getenv('TELEGRAM_TOKEN')
 
 logging.basicConfig(
     format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
@@ -97,7 +97,7 @@ def button(update: Update, context: CallbackContext) -> None:
 
 def main() -> None:
     """Основная логика программы."""
-    updater = Updater(token=secret_token)
+    updater = Updater(token=TOKEN)
 
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
     updater.dispatcher.add_handler(CallbackQueryHandler(button))
