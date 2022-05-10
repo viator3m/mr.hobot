@@ -3,8 +3,9 @@ import os
 
 import requests
 
-from telegram import ReplyKeyboardMarkup
-from telegram.ext import Updater, Filters, MessageHandler, CommandHandler
+from telegram import InlineKeyboardMarkup, InlineKeyboardButton, Update
+from telegram.ext import Updater, Filters, MessageHandler, CommandHandler, \
+    CallbackQueryHandler, CallbackContext
 
 from dotenv import load_dotenv
 
@@ -17,10 +18,20 @@ logging.basicConfig(
     level=logging.INFO
 )
 
-CAT_URL = 'https://api.thecatapi.com/v1/images/search'
+CAT_URL_PHOTO = 'https://api.thecatapi.com/v1/images/search'
+CAt_URL_GIF = 'https://api.thecatapi.com/v1/images/search?mime_types=gif'
+
+BUTTONS = InlineKeyboardMarkup(
+    [
+        [
+            InlineKeyboardButton('Ещё фото котика!', callback_data='new_cat'),
+            InlineKeyboardButton('Ещё гифку котика!', callback_data='gif')
+        ],
+    ],
+    resize_keyboard=True)
 
 
-def say_hi(update, context):
+def say_hi(update: Update, context: CallbackContext) -> None:
     chat = update.effective_chat
     context.bot.send_message(
         chat_id=chat.id,
@@ -29,9 +40,9 @@ def say_hi(update, context):
              '*слоновские радостные звуки*\n')
 
 
-def get_new_image():
+def get_new_image(url: str) -> str:
     try:
-        response = requests.get(CAT_URL).json()
+        response = requests.get(url).json()
     except Exception as error:
         logging.error(f'Ошибка при запросе к основному API: {error}')
         dog_url = 'https://api.thedogapi.com/v1/images/search'
@@ -41,37 +52,58 @@ def get_new_image():
     return random_cat
 
 
-def new_cat(update, context):
+def new_cat(update: Update, context: CallbackContext) -> None:
     chat = update.effective_chat
+
     context.bot.send_photo(
         chat.id,
-        get_new_image()
+        get_new_image(CAT_URL_PHOTO),
+        reply_markup=BUTTONS
     )
 
 
-def wake_up(update, context):
+def new_cat_gif(update: Update, context: CallbackContext) -> None:
+    chat = update.effective_chat
+
+    context.bot.send_animation(
+        chat.id,
+        get_new_image(CAt_URL_GIF),
+        reply_markup=BUTTONS
+    )
+
+
+def wake_up(update: Update, context: CallbackContext) -> None:
+    """Приветствует пользователя. Сразу отправляет фото."""
     chat = update.effective_chat
     name = update.effective_chat.first_name
-
-    buttons = ReplyKeyboardMarkup(
-        [
-            ['/newcat'],
-        ],
-        resize_keyboard=True)
 
     context.bot.send_message(
         chat_id=chat.id,
         text=f'Привет, {name}! Посмотри какого котика я тебе нашел.',
-        reply_markup=buttons
     )
-    context.bot.send_photo(chat.id, get_new_image())
+    context.bot.send_photo(
+        chat.id,
+        get_new_image(CAT_URL_PHOTO),
+        reply_markup=BUTTONS
+    )
 
 
-def main():
+def button(update: Update, context: CallbackContext) -> None:
+    """Запускает нужную функцию, в зависимости от запроса."""
+    query = update.callback_query
+    query.answer()
+    if query.data == 'new_cat':
+        new_cat(update, context)
+    if query.data == 'gif':
+        new_cat_gif(update, context)
+
+
+def main() -> None:
+    """Основная логика программы."""
     updater = Updater(token=secret_token)
 
     updater.dispatcher.add_handler(CommandHandler('start', wake_up))
-    updater.dispatcher.add_handler(CommandHandler('newcat', new_cat))
+    updater.dispatcher.add_handler(CallbackQueryHandler(button))
     updater.dispatcher.add_handler(MessageHandler(Filters.text, say_hi))
 
     updater.start_polling()
