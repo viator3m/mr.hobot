@@ -24,7 +24,7 @@ CAt_URL_GIF = 'https://api.thecatapi.com/v1/images/search?mime_types=gif'
 BUTTONS = InlineKeyboardMarkup(
     [
         [
-            InlineKeyboardButton('Ещё фото котика!', callback_data='new_cat'),
+            InlineKeyboardButton('Ещё фото котика!', callback_data='photo'),
             InlineKeyboardButton('Ещё гифку котика!', callback_data='gif')
         ],
     ],
@@ -32,6 +32,7 @@ BUTTONS = InlineKeyboardMarkup(
 
 
 def say_hi(update: Update, context: CallbackContext) -> None:
+    """Отправляет текст в ответ на любое сообщение пользователя."""
     chat = update.effective_chat
     context.bot.send_message(
         chat_id=chat.id,
@@ -41,6 +42,7 @@ def say_hi(update: Update, context: CallbackContext) -> None:
 
 
 def get_new_image(url: str) -> str:
+    """Делает запрос на THE CAT API. Возвращает ссылку на изображение."""
     try:
         response = requests.get(url).json()
     except Exception as error:
@@ -52,24 +54,21 @@ def get_new_image(url: str) -> str:
     return random_cat
 
 
-def new_cat(update: Update, context: CallbackContext) -> None:
+def new_cat(update: Update, context: CallbackContext, content: str) -> None:
+    """Отправляет в чат фото/гифку в зависимости от параметра content."""
     chat = update.effective_chat
-
-    context.bot.send_photo(
-        chat.id,
-        get_new_image(CAT_URL_PHOTO),
-        reply_markup=BUTTONS
-    )
-
-
-def new_cat_gif(update: Update, context: CallbackContext) -> None:
-    chat = update.effective_chat
-
-    context.bot.send_animation(
-        chat.id,
-        get_new_image(CAt_URL_GIF),
-        reply_markup=BUTTONS
-    )
+    if content == 'photo':
+        context.bot.send_photo(
+            chat.id,
+            get_new_image(CAT_URL_PHOTO),
+            reply_markup=BUTTONS
+        )
+    elif content == 'gif':
+        context.bot.send_animation(
+            chat.id,
+            get_new_image(CAt_URL_GIF),
+            reply_markup=BUTTONS
+        )
 
 
 def wake_up(update: Update, context: CallbackContext) -> None:
@@ -92,10 +91,10 @@ def button(update: Update, context: CallbackContext) -> None:
     """Запускает нужную функцию, в зависимости от запроса."""
     query = update.callback_query
     query.answer()
-    if query.data == 'new_cat':
-        new_cat(update, context)
-    if query.data == 'gif':
-        new_cat_gif(update, context)
+    if query.data == 'photo':
+        new_cat(update, context, 'photo')
+    elif query.data == 'gif':
+        new_cat(update, context, 'gif')
 
 
 def main() -> None:
