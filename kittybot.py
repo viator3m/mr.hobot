@@ -25,7 +25,7 @@ CAt_URL_GIF = 'https://api.thecatapi.com/v1/images/search?mime_types=gif'
 BUTTONS = InlineKeyboardMarkup(
     [
         [
-            InlineKeyboardButton('Ещё фотку котика!', callback_data='photo'),
+            InlineKeyboardButton('Ещё фото котика!', callback_data='photo'),
             InlineKeyboardButton('Ещё гифку котика!', callback_data='gif')
         ],
     ],
