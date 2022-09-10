@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TOKEN = os.getenv('TELEGRAM_TOKEN')
+TOKEN = os.getenv('TOKEN')
 
 logging.basicConfig(
     format='%(asctime)s | %(name)s | %(levelname)s | %(message)s',
