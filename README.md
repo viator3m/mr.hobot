@@ -18,7 +18,7 @@ git clone git@github.com:viator3m/mr.hobot.git
 ```
 - создать виртуальное окружение и установить зависимости
 ```
-pytohn -m venv venv
+python -m venv venv
 source venv/Scripts/activate (win)
 source venv/Scripts/activate (linux)
 pip install -r requirements.txt
