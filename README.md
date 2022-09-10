@@ -11,7 +11,7 @@
 
 Деплой бота осуществлен на облачной платформе Heroku.
 
-![example_of_work](https://i.postimg.cc/mDHtjvh4/example-of-work.gif)
+<img src="https://i.postimg.cc/mDHtjvh4/example-of-work.gif" width="50%" height="50%">
 
 #### Запуск бота:
 - клонировать репозиторий
